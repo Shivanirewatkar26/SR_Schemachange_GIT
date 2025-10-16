@@ -59,7 +59,6 @@ jobs:
           snowsql -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -p $SF_PASSWORD <<EOF
           CREATE DATABASE IF NOT EXISTS DEMO_SRDB_${ENV};
           CREATE SCHEMA IF NOT EXISTS DEMO_SRDB_${ENV}.DEMO_SR1_${ENV};
-EOF
 
       # 6️⃣ Run schemachange migrations
       - name: Run schemachange

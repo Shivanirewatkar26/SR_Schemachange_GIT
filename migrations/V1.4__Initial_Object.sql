@@ -4,20 +4,10 @@
 -- ============================================================================
 
 -- Create or replace the database dynamically based on environment
-CREATE OR REPLACE DATABASE DEMO_SR1_{{ENV}};
-
--- Switch to the database
-USE DATABASE DEMO_SR1_{{ENV}};
+CREATE OR REPLACE DATABASE DEMO_SRdb_{{ENV}};
 
 -- Create or replace schema
-CREATE OR REPLACE SCHEMA DEMO_SR1;
-
--- Switch to the schema
-USE SCHEMA DEMO_SR1;
-
--- ============================================================================
--- Table Creation (Rebuild on Each Deployment)
--- ============================================================================
+CREATE OR REPLACE SCHEMA DEMO_SR1_{{ENV}};
 
 -- Create or replace SUPPLIER table
 CREATE OR REPLACE TABLE SUPPLIER (

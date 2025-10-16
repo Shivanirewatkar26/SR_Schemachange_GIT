@@ -1,10 +1,10 @@
-name: snowflake-devops-demo
+name: snowflake-devops-demo3
 
 on:
   push:
     branches:
       - main
-      - DEV
+      - develop
       - 'feature/*'
     paths:
       - 'migrations/**'

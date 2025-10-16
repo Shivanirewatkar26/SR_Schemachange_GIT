@@ -1,4 +1,4 @@
-name: snowflake-devops-cicd
+name: snowflake-devops-demo3
 
 on:
   push:
@@ -87,4 +87,4 @@ EOF
                        -s "$SF_SCHEMA" \
                        -c "$CHANGE_HISTORY_TABLE" \
                        --create-change-history-table \
-                       --vars "{\"ENV\": \"$ENV\"}"
+                       --vars '{"ENV": "'"$ENV"'"}'

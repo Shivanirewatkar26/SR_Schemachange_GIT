@@ -1,11 +1,11 @@
-name: snowflake-devops-demo3
+name: sf-test-all-action
 
 on:
   push:
     branches:
       - main
       - develop
-      - tst
+      - tst              # ✅ Lowercase branch name
       - 'feature/*'
     paths:
       - 'migrations/**'

@@ -1,10 +1,12 @@
-name: sfdevops
+name: snowflake-devops-demo3
 
 on:
   push:
     branches:
       - main
       - develop
+      - tst
+      - 'feature/*'
     paths:
       - 'migrations/**'
   workflow_dispatch:
@@ -32,6 +34,8 @@ jobs:
             echo "ENV=PRD" >> $GITHUB_ENV
           elif [[ "$GITHUB_REF_NAME" == "develop" ]]; then
             echo "ENV=DEV" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" == "tst" ]]; then
+            echo "ENV=TST" >> $GITHUB_ENV
           else
             echo "ENV=DEV" >> $GITHUB_ENV
           fi
@@ -58,7 +62,7 @@ jobs:
           echo "Using change history table: $CHANGE_HISTORY_TABLE"
           
           echo "Running schemachange for environment: $ENV"
-          schemachange -f $GITHUB_WORKSPACE/migrations 
+          schemachange -f $GITHUB_WORKSPACE/migrations \
                        -a $SF_ACCOUNT \
                        -u $SF_USERNAME \
                        -r $SF_ROLE \

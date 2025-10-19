@@ -58,7 +58,7 @@ jobs:
           SF_SCHEMA: ${{ secrets.SF_SCHEMA }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
         run: |
-          CHANGE_HISTORY_TABLE="${SF_DATABASE}.${SF_SCHEMA}.CHANGE_HISTORY_${ENV}"
+          CHANGE_HISTORY_TABLE="${SF_DATABASE}.${SF_SCHEMA}.SCHEMA_CHANGE_HISTORY_${ENV}"
           echo "Using change history table: $CHANGE_HISTORY_TABLE"
           
           echo "Running schemachange for environment: $ENV"

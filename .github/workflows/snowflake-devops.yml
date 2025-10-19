@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-      - dev
-      - test
+      - develop
+      - tst
       - 'feature/*'
     paths:
       - 'migrations/**'
@@ -32,9 +32,9 @@ jobs:
           echo "Branch: $GITHUB_REF_NAME"
           if [[ "$GITHUB_REF_NAME" == "main" ]]; then
             echo "ENV=PRD" >> $GITHUB_ENV
-          elif [[ "$GITHUB_REF_NAME" == "test" ]]; then
+          elif [[ "$GITHUB_REF_NAME" == "tst" ]]; then
             echo "ENV=TST" >> $GITHUB_ENV
-          elif [[ "$GITHUB_REF_NAME" == "dev" ]]; then
+          elif [[ "$GITHUB_REF_NAME" == "develop" ]]; then
             echo "ENV=DEV" >> $GITHUB_ENV
           else
             echo "ENV=DEV" >> $GITHUB_ENV
@@ -71,8 +71,8 @@ jobs:
         run: |
           CHANGE_HISTORY_TABLE="${SF_DATABASE}.${SF_SCHEMA}.SCHEMA_CHANGE_HISTORY"
           echo "Using change history table: $CHANGE_HISTORY_TABLE"
+          
           echo "Running schemachange for environment: $ENV"
-
           schemachange -f $GITHUB_WORKSPACE/migrations \
                        -a $SF_ACCOUNT \
                        -u $SF_USERNAME \

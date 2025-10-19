@@ -1,0 +1,84 @@
+name: snowflake-devops
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - test
+      - 'feature/*'
+    paths:
+      - 'migrations/**'
+  workflow_dispatch:
+
+jobs:
+  deploy-snowflake-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Determine environment based on branch
+      - name: Determine environment
+        run: |
+          echo "Branch: $GITHUB_REF_NAME"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            echo "ENV=PRD" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" == "test" ]]; then
+            echo "ENV=TST" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" == "dev" ]]; then
+            echo "ENV=DEV" >> $GITHUB_ENV
+          else
+            echo "ENV=DEV" >> $GITHUB_ENV
+          fi
+          echo "Environment set to: $ENV"
+
+      # Install schemachange and dependencies
+      - name: Install schemachange
+        run: |
+          pip install --upgrade pip
+          pip install schemachange==3.7.0 jinja2
+
+      # Run schemachange with environment-based configuration
+      - name: Run schemachange
+        env:
+          # Non-Prod (DEV/TST)
+          SF_ACCOUNT: ${{ secrets.SF_ACCOUNT_NONPROD }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME_NONPROD }}
+          SF_ROLE: ${{ secrets.SF_ROLE_NONPROD }}
+          SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE_NONPROD }}
+          SF_DATABASE: ${{ secrets.SF_DATABASE_NONPROD }}
+          SF_SCHEMA: ${{ secrets.SF_SCHEMA_NONPROD }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD_NONPROD }}
+
+          # Production (Phase 2 – uncomment when ready)
+          # SF_ACCOUNT: ${{ secrets.SF_ACCOUNT_PROD }}
+          # SF_USERNAME: ${{ secrets.SF_USERNAME_PROD }}
+          # SF_ROLE: ${{ secrets.SF_ROLE_PROD }}
+          # SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE_PROD }}
+          # SF_DATABASE: ${{ secrets.SF_DATABASE_PROD }}
+          # SF_SCHEMA: ${{ secrets.SF_SCHEMA_PROD }}
+          # SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD_PROD }}
+
+        run: |
+          CHANGE_HISTORY_TABLE="${SF_DATABASE}.${SF_SCHEMA}.SCHEMA_CHANGE_HISTORY"
+          echo "Using change history table: $CHANGE_HISTORY_TABLE"
+          echo "Running schemachange for environment: $ENV"
+
+          schemachange -f $GITHUB_WORKSPACE/migrations \
+                       -a $SF_ACCOUNT \
+                       -u $SF_USERNAME \
+                       -r $SF_ROLE \
+                       -w $SF_WAREHOUSE \
+                       -d $SF_DATABASE \
+                       -c $CHANGE_HISTORY_TABLE \
+                       --create-change-history-table \
+                       --vars '{"ENV": "'"$ENV"'"}'
